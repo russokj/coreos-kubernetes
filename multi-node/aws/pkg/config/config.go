@@ -362,10 +362,17 @@ func (c Cluster) ValidateUserData(opts StackTemplateOptions) error {
 }
 
 func (c Cluster) RenderStackTemplate(opts StackTemplateOptions) ([]byte, error) {
-	stackConfig, err := c.stackConfig(opts, true)
+	stackConfig, err := c.stackConfig(opts, false)
 	if err != nil {
 		return nil, err
 	}
+
+        b, _:= json.Marshal(stackConfig.UserDataController)
+        s := string(b)
+        stackConfig.UserDataController = s[1:len(s)-1]
+        b,_  = json.Marshal(stackConfig.UserDataWorker)
+        s = string(b)
+        stackConfig.UserDataWorker = s[1:len(s)-1]
 
 	rendered, err := execute(opts.StackTemplateTmplFile, stackConfig, false)
 	if err != nil {
